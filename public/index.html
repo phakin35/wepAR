@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="สำรวจหอจดหมายเหตุดิจิทัล วัดท่าวัด (วัดมหาพรหมโพธิราช) จ.สกลนคร ส่องโบราณวัตถุ 3 มิติ และเรียนรู้วิถีชีวิตผ่านระบบ WebAR สบายตาสำหรับผู้สูงอายุ">
+  <title>วัดท่าวัด — Digital Archive | สัมผัสโบราณวัตถุเสมือนจริง 3 มิติ 25 รายการ</title>
+
+  <!-- CSS Styling -->
+  <link rel="stylesheet" href="index.css">
+
+  <!-- Google model-viewer for WebAR -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+</head>
+
+<body>
+
+  <!-- Header Section -->
+  <header>
+    <div class="nav-container">
+      <div class="logo">
+        <span class="logo-icon"><i data-lucide="archive"></i></span>
+        <span class="logo-text">วัดท่าวัด Archive</span>
+      </div>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle" aria-label="เปลี่ยนธีม">
+          <i data-lucide="sun" class="sun-icon"></i>
+          <i data-lucide="moon" class="moon-icon"></i>
+        </button>
+        <button class="nav-toggle" id="nav-toggle" aria-label="เปิดเมนู"><i data-lucide="menu"></i></button>
+      </div>
+      <ul class="nav-menu" id="nav-menu">
+        <li class="nav-item hero active"><a href="#hero">หน้าแรก</a></li>
+        <li class="nav-item archive"><a href="#archive-section">คลังวัตถุโบราณ 25 รายการ</a></li>
+        <li class="nav-item history"><a href="#history">ประวัติวัด</a></li>
+        <li class="nav-item contact"><a href="#contact">การเดินทาง</a></li>
+      </ul>
+    </div>
+  </header>
+
+
+
+  <section id="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <span class="hero-badge-sacred">หอจดหมายเหตุดิจิทัลโบราณคดีริมหนองหาร</span>
+      <h1 class="hero-title">วัดมหาพรหมโพธิราช</h1>
+      <p class="hero-subtitle-sub">วัดท่าวัด จ.สกลนคร</p>
+      <p class="hero-subtitle">แหล่งเรียนรู้วัตถุโบราณยุคก่อนประวัติศาสตร์และศิลปะลพบุรีเสมือนจริง 3 มิติ (3D)</p>
+      <div class="btn-container-center">
+        <a href="#history" class="btn btn-primary-gold">
+          <i data-lucide="book-open" class="icon-inline"></i> อ่านประวัติความเป็นมา
+        </a>
+        <a href="#archive-section" class="btn btn-secondary-gold">
+          <i data-lucide="box" class="icon-inline"></i> ชมโมเดล 3 มิติ (3D)
+        </a>
+      </div>
+    </div>
+    <!-- Scroll down indicator -->
+    <a href="#archive-section" class="hero-scroll-indicator" aria-label="เลื่อนลงดูเนื้อหา">
+      <span>เลื่อนดูข้อมูล</span>
+      <div class="scroll-arrow"></div>
+    </a>
+  </section>
+
+
+  <!-- Archive Grid Section -->
+  <section id="archive-section">
+    <div class="glow-blob blob-1"></div>
+    <div class="section-header">
+      <h2>คลังโบราณวัตถุ</h2>
+      <p>เลื่อนดูทีละหน้าให้ครบทั้ง 25 รายการ และกดเปิดดูโมเดล 3 มิติได้ทุกรายการ</p>
+    </div>
+
+
+    <!-- Dynamic Grid of 25 Artifacts -->
+    <div class="archive-grid" id="archive-grid">
+      <!-- Loading spinner initially -->
+      <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+        <div class="loading-spinner" style="margin: 0 auto 1.5rem auto;"></div>
+        <p style="font-size: 1.3rem; font-family: var(--font-title);">กำลังโหลดคลังข้อมูลวัตถุโบราณ...</p>
+      </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-wrapper" id="pagination-wrapper">
+      <button class="page-btn" id="page-prev" aria-label="หน้าก่อน">
+        <i data-lucide="chevron-left"></i>
+      </button>
+      <div class="page-numbers" id="page-numbers"></div>
+      <button class="page-btn" id="page-next" aria-label="หน้าถัดไป">
+        <i data-lucide="chevron-right"></i>
+      </button>
+    </div>
+
+    <!-- Count indicator -->
+    <div class="archive-count-indicator" id="archive-count-indicator"></div>
+  </section>
+
+  <!-- Artifact Detail Modal -->
+  <div class="modal-overlay" id="artifact-modal">
+    <div class="modal-content">
+      <!-- Close button -->
+      <button class="modal-close" id="modal-close" aria-label="ปิดหน้านี้"><i data-lucide="x" class="icon-inline"></i>
+        ปิดหน้านี้</button>
+
+      <div class="modal-grid">
+        <!-- Left Side: Image / 3D Viewer Pane -->
+        <div class="modal-viewer-area">
+
+          <!-- State 1: Image view -->
+          <div class="buddha-photo-view" id="modal-photo-view">
+            <img id="modal-photo" src="" alt="รูปถ่ายวัตถุโบราณ">
+            <div class="buddha-photo-overlay">
+              <button class="btn-activate-3d" id="modal-btn-activate-3d">
+                <i data-lucide="box" class="icon-inline"></i> กดเปิดส่องดูแบบหมุน 3 มิติ (3D)
+              </button>
+              <div class="btn-activate-3d-subtext">
+                สามารถหมุนส่องดูได้รอบทิศทาง 360 องศา
+              </div>
+            </div>
+          </div>
+
+          <!-- State 2: 3D model view -->
+          <div class="buddha-3d-view" id="modal-3d-view">
+            <button class="btn-back-to-photo" id="modal-btn-back"><i data-lucide="arrow-left" class="icon-inline"></i>
+              กลับไปดูรูปถ่าย</button>
+            <div style="width: 100%; height: 100%;" id="model-viewer-placeholder">
+              <!-- Instantiated model-viewer injected here to keep memory low -->
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Right Side: Metadata and Info -->
+        <div class="modal-info-area">
+          <span class="highlight-badge" id="modal-category"
+            style="position: static; display: inline-block; margin-bottom: 1rem;"></span>
+          <h2 id="modal-title" style="font-size: 2.2rem; color: var(--secondary-gold); margin-bottom: 0.5rem;"></h2>
+          <h4 id="modal-english-title"
+            style="color: var(--text-muted); font-size: 1.25rem; font-weight: normal; margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 1rem;">
+          </h4>
+
+          <!-- Text-to-speech speaker button for elderly -->
+          <button class="tts-btn" id="btn-tts" aria-label="ฟังเสียงบรรยาย">
+            <i data-lucide="volume-2" class="icon-inline"></i> กดเพื่อฟังเสียงอ่านประวัติให้ฟัง
+          </button>
+
+          <ul class="buddha-attributes" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+            <li><i data-lucide="clock" class="icon-inline"></i> <strong>อายุสมัย:</strong> <span id="modal-age"
+                style="font-weight: normal; color: var(--text-dark);"></span></li>
+            <li><i data-lucide="map-pin" class="icon-inline"></i> <strong>แหล่งที่พบ:</strong> <span id="modal-origin"
+                style="font-weight: normal; color: var(--text-dark);"></span></li>
+          </ul>
+
+          <p id="modal-description"
+            style="font-size: 1.25rem; line-height: 1.8; color: var(--text-dark); margin-bottom: 2rem;"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Section -->
+  <section id="history">
+    <div class="glow-blob blob-2"></div>
+    <div class="section-header">
+      <h2>ตำนานวัดท่าวัดสกลนคร</h2>
+      <p>เรื่องราวประวัติศาสตร์ของกลุ่มโบราณสถาน 3 สัญชาติ (เหนือ-กลาง-ใต้) ริมฝั่งหนองหาร</p>
+    </div>
+
+    <div class="history-epochs">
+      <!-- Epoch 1 -->
+      <div class="epoch-row">
+        <div class="epoch-text">
+          <span class="epoch-number">01</span>
+          <h3>วัดเหนือ (วัดท่าวัดเหนือ)</h3>
+          <span class="epoch-meta">ยุคขอมโบราณ (ศิลปะลพบุรี)</span>
+          <p>ชุมชนขอมโบราณริมฝั่งหนองหารได้ร่วมใจสร้างวัดเหนือขึ้นมาเป็นศูนย์กลางแห่งจิตวิญญาณ
+            ในอดีตมีการขุดค้นพบชิ้นส่วนเทวรูป พระพุทธรูปปูนปั้น และใบเสมาแกะสลักศิลาแลงอย่างวิจิตรตระการตา</p>
+          <p>
+            โบราณวัตถุเหล่านี้สะท้อนถึงการปะทะประสานทางวัฒนธรรมและความรุ่งเรืองทางพุทธศาสนาในดินแดนแอ่งสกลนครเมื่อหลายร้อยปีก่อน
+          </p>
+        </div>
+        <div class="epoch-image">
+          <img src="assets/images/gallery_pagoda.png" alt="วัดท่าวัดเหนือ - ยุคขอมโบราณ">
+        </div>
+      </div>
+
+      <!-- Epoch 2 -->
+      <div class="epoch-row reverse">
+        <div class="epoch-text">
+          <span class="epoch-number">02</span>
+          <h3>วัดกลาง (วัดท่าวัดกลาง)</h3>
+          <span class="epoch-meta">ยุคมอญทวารวดี</span>
+          <p>ชาวมอญสมัยทวารวดีได้สร้างวัดกลางขึ้นเพื่อเป็นสถานที่บำเพ็ญบุญของชุมชน
+            บริเวณนี้ได้ขุดพบแนวเสมาหินสกัดทรงวงล้อธรรมจักรที่สมบูรณ์ ชิ้นส่วนหม้อเคลือบดินเผา และเครื่องประดับโลหะโบราณ
+          </p>
+          <p>
+            การค้นพบเหล่านี้บ่งบอกอย่างแน่ชัดว่าริมหนองหารเคยเป็นเส้นทางค้าขายและแหล่งตั้งถิ่นฐานที่มีอารยธรรมสูงส่งมาตั้งแต่พุทธศตวรรษที่
+            12</p>
+        </div>
+        <div class="epoch-image">
+          <img src="assets/images/gallery_hall.png" alt="วัดกลาง - ยุคมอญทวารวดี">
+        </div>
+      </div>
+
+      <!-- Epoch 3 -->
+      <div class="epoch-row">
+        <div class="epoch-text">
+          <span class="epoch-number">03</span>
+          <h3>วัดใต้ (วัดท่าวัดใต้)</h3>
+          <span class="epoch-meta">ยุคล้านช้าง (อิทธิพลลาว)</span>
+          <p>ชาวลาวอพยพยุคล้านช้างได้ร่วมกันสร้างวัดใต้เพื่อสืบทอดขนบธรรมเนียมประเพณีลุ่มแม่น้ำโขง
+            บ่งบอกผ่านทางพระพุทธรูปทองสัมฤทธิ์ปางมารวิชัยศิลปะแบบล้านช้างอันงดงามอ่อนช้อย</p>
+          <p>
+            ประเพณีแห่กฐินทางน้ำของบ้านท่าวัดใต้ถือเป็นมรดกทางวัฒนธรรมทางสายน้ำเพียงหนึ่งเดียวที่ได้รับการสืบสานสืบต่อกันมาจนถึงปัจจุบัน
+          </p>
+        </div>
+        <div class="epoch-image">
+          <img src="assets/images/gallery_lake.png" alt="วัดใต้ - ยุคล้านช้าง">
+        </div>
+      </div>
+
+      <!-- Epoch 4 -->
+      <div class="epoch-row reverse">
+        <div class="epoch-text">
+          <span class="epoch-number">04</span>
+          <h3>วัดมหาพรหมโพธิราช</h3>
+          <span class="epoch-meta">ปัจจุบัน</span>
+          <p>ในปัจจุบันวัดทั้งสามได้รับการรวมเข้าเป็นหนึ่งเดียวภายใต้ชื่อ "วัดมหาพรหมโพธิราช"
+            หรือที่ชาวบ้านเรียกขานกันทั่วไปว่า "วัดท่าวัด"
+            เพื่อเป็นศูนย์รวมจิตใจและสืบสานมรดกทางวัฒนธรรมร่วมกันอย่างสามัคคี</p>
+          <p>การพัฒนาหอจดหมายเหตุดิจิทัลระบบ WebAR
+            นี้เป็นก้าวสำคัญในการสืบทอดภูมิปัญญาท้องถิ่นให้คนรุ่นหลังได้เรียนรู้ผ่านระบบ 3 มิติอย่างใกล้ชิดและเข้าใจง่าย
+          </p>
+        </div>
+        <div class="epoch-image">
+          <img src="assets/images/buddha_image.png" alt="วัดมหาพรหมโพธิราช - ปัจจุบัน">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sacred Gallery Section -->
+  <section id="gallery-section">
+    <div class="glow-blob blob-3"></div>
+    <div class="section-header">
+      <h2>แกลเลอรีโบราณวัตถุเด่น 6 รายการ</h2>
+      <p>คลิกที่ภาพโบราณวัตถุเพื่อเปิดดูรายละเอียดความคมชัดสูงในกล่องรับชมภาพเสมือนจริง (Lightbox)</p>
+    </div>
+
+    <div class="gallery-grid" id="featured-gallery-grid">
+      <!-- Dynamic featured gallery items injected here -->
+    </div>
+  </section>
+
+  <!-- Lightbox Overlay -->
+  <div id="lightbox" class="lightbox-overlay" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()"><i data-lucide="x"></i></button>
+    <div class="lightbox-container" onclick="event.stopPropagation()">
+      <img id="lightbox-img" src="" alt="ภาพขยาย">
+      <div id="lightbox-caption" class="lightbox-caption"></div>
+    </div>
+  </div>
+
+  <!-- Map & Contact Section -->
+  <section id="contact">
+    <div class="section-header">
+      <h2>การเดินทางแวะมาเยี่ยมชม</h2>
+      <p>เรายินดีต้อนรับทุกท่านสู่ชุมชนท่องเที่ยวเชิงวัฒนธรรมบ้านท่าวัด ริมฝั่งหนองหารสกลนคร</p>
+    </div>
+
+    <div class="contact-container">
+      <div class="contact-info">
+        <h3>สถานที่ตั้งและการติดต่อ</h3>
+        <ul class="contact-details">
+          <li>
+            <div class="contact-details-icon"><i data-lucide="map-pin"></i></div>
+            <div>
+              <h4>ที่ตั้งและพิกัด</h4>
+              <p>บ้านท่าวัด ตำบลเหล่าปอแดง อำเภอเมือง จังหวัดสกลนคร 47000</p>
+            </div>
+          </li>
+          <li>
+            <div class="contact-details-icon"><i data-lucide="clock"></i></div>
+            <div>
+              <h4>เวลาทำการ</h4>
+              <p>เปิดชมโบราณคดีและกราบสักการะหลวงพ่อพระประธานทุกวัน เวลา 08.00 น. - 17.00 น.</p>
+            </div>
+          </li>
+          <li>
+            <div class="contact-details-icon"><i data-lucide="phone"></i></div>
+            <div>
+              <h4>ประสานงานท่องเที่ยว</h4>
+              <p>องค์การบริหารส่วนตำบลเหล่าปอแดง หรือ กลุ่มวิสาหกิจท่องเที่ยวท่าวัดสกลนคร</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="map-wrapper">
+        <div class="mock-map">
+          <div class="mock-map-marker"><i data-lucide="map-pin"></i></div>
+          <h4>วัดท่าวัด (วัดมหาพรหมโพธิราช)</h4>
+          <p style="margin-bottom: 2rem;">ริมแม่น้ำหนองหาร ตำบลเหล่าปอแดง จ.สกลนคร</p>
+          <a href="https://maps.google.com/?q=17.1856,104.2254" target="_blank" class="btn btn-primary">
+            <i data-lucide="map" class="icon-inline"></i> กดตรงนี้เพื่อเปิดแผนที่นำทางบนมือถือ
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ambient Audio Float Button -->
+  <div class="audio-widget">
+    <div class="audio-tooltip" id="audio-text">เปิดเสียงระฆังบรรเลง</div>
+    <button class="audio-btn" id="audio-btn" aria-label="เปิดเสียงระฆังจำลอง"><i data-lucide="volume-2"></i></button>
+  </div>
+
+  <!-- Footer Section -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-logo">
+        <span class="logo-icon"><i data-lucide="archive"></i></span>
+        <span class="logo-text">หอจดหมายเหตุชุมชนวัดท่าวัด</span>
+      </div>
+      <ul class="footer-links">
+        <li><a href="#hero">หน้าแรก</a></li>
+        <li><a href="#archive-section">คลังวัตถุโบราณ</a></li>
+        <li><a href="#history">ประวัติวัด</a></li>
+        <li><a href="#contact">ติดต่อเรา</a></li>
+      </ul>
+      <p class="footer-credits">
+        &copy; 2026 วัดมหาพรหมโพธิราช (วัดท่าวัด) จังหวัดสกลนคร. สงวนลิขสิทธิ์ทั้งหมด.<br>
+        พัฒนาระบบคลังวัตถุโบราณเสมือนจริง 3 มิติ อำนวยความสะดวกสำหรับผู้สูงอายุ
+      </p>
+    </div>
+  </footer>
+
+  <!-- Lucide Icons Library -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Web Interaction Scripts -->
+  <script src="index.js"></script>
+</body>
+
+</html>
+</div>
+</footer>
+
+<!-- Lucide Icons Library -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<!-- Web Interaction Scripts -->
+<script src="index.js"></script>
+</body>
+
+</html>

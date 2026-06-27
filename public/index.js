@@ -186,11 +186,27 @@ function renderPagination(totalItems, totalPages) {
 // ----------------------------------------------------
 // 2. Search & Category Filters
 // ----------------------------------------------------
+const searchClearBtn = document.getElementById('search-clear');
+
 if (searchInput) {
   searchInput.addEventListener('input', (e) => {
     searchQuery = e.target.value.toLowerCase().trim();
+    if (searchClearBtn) {
+      searchClearBtn.style.display = searchQuery ? 'flex' : 'none';
+    }
     currentPage = 1; // reset to page 1 on new search
     renderGrid();
+  });
+}
+
+if (searchClearBtn && searchInput) {
+  searchClearBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    searchQuery = '';
+    searchClearBtn.style.display = 'none';
+    currentPage = 1;
+    renderGrid();
+    searchInput.focus();
   });
 }
 

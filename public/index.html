@@ -74,6 +74,33 @@
       <p>เลื่อนดูทีละหน้าให้ครบทั้ง 25 รายการ และกดเปิดดูโมเดล 3 มิติได้ทุกรายการ</p>
     </div>
 
+    <!-- Search & Category Filter -->
+    <div class="archive-toolbar">
+      <div class="search-box">
+        <i data-lucide="search" class="search-icon"></i>
+        <input type="text" id="search-input" placeholder="ค้นหาชื่อ หรือ รายละเอียดโบราณวัตถุ..." autocomplete="off">
+        <button class="search-clear" id="search-clear" aria-label="ล้างการค้นหา" style="display:none;">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="category-filters">
+        <button class="category-btn active" data-category="all">
+          <i data-lucide="layers" class="icon-inline"></i> ทั้งหมด
+        </button>
+        <button class="category-btn" data-category="buddha">
+          <i data-lucide="sparkles" class="icon-inline"></i> พระบูชาและพระเครื่อง
+        </button>
+        <button class="category-btn" data-category="stone">
+          <i data-lucide="gem" class="icon-inline"></i> โบราณวัตถุหินทราย
+        </button>
+        <button class="category-btn" data-category="tools">
+          <i data-lucide="hammer" class="icon-inline"></i> เครื่องใช้วิถีชีวิต
+        </button>
+        <button class="category-btn" data-category="culture">
+          <i data-lucide="music" class="icon-inline"></i> วัฒนธรรมและดนตรี
+        </button>
+      </div>
+    </div>
 
     <!-- Dynamic Grid of 25 Artifacts -->
     <div class="archive-grid" id="archive-grid">
@@ -344,16 +371,6 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Web Interaction Scripts -->
   <script src="index.js"></script>
-</body>
-
-</html>
-</div>
-</footer>
-
-<!-- Lucide Icons Library -->
-<script src="https://unpkg.com/lucide@latest"></script>
-<!-- Web Interaction Scripts -->
-<script src="index.js"></script>
 </body>
 
 </html>

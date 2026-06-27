@@ -83,6 +83,10 @@ body.dark-theme {
   padding: 3rem 0;
 }
 
+body.dark-theme #archive-section {
+  background: linear-gradient(160deg, #1F1A15 0%, #26201B 60%, #1B1613 100%);
+}
+
 #archive-section>* {
   max-width: 1200px;
   margin-left: auto;
@@ -105,6 +109,10 @@ body.dark-theme {
   max-width: 100%;
   padding: 3rem 0;
   overflow: hidden;
+}
+
+body.dark-theme #history {
+  background: linear-gradient(170deg, #1B1613 0%, #26201B 50%, #1F1A15 100%);
 }
 
 #history>* {
@@ -145,6 +153,10 @@ body.dark-theme {
   overflow: hidden;
 }
 
+body.dark-theme #gallery-section {
+  background: linear-gradient(150deg, #1F1A15 0%, #26201B 50%, #1B1613 100%);
+}
+
 #gallery-section>* {
   max-width: 1200px;
   margin-left: auto;
@@ -168,6 +180,10 @@ body.dark-theme {
   max-width: 100%;
   padding: 3rem 0;
   overflow: hidden;
+}
+
+body.dark-theme #contact {
+  background: linear-gradient(155deg, #1B1613 0%, #26201B 60%, #1F1A15 100%);
 }
 
 #contact>* {
@@ -824,6 +840,103 @@ section {
   background: var(--primary);
   color: #FFF;
   border-color: var(--primary);
+}
+
+/* ====== ARCHIVE TOOLBAR (Search + Filters) ====== */
+.archive-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 2rem;
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 520px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.search-box .search-icon {
+  position: absolute;
+  left: 16px;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.search-box .search-icon.lucide {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 0.9rem 2.8rem 0.9rem 2.8rem;
+  border: 2px solid var(--border-color);
+  border-radius: 50px;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  color: var(--text-dark);
+  background: var(--card-bg);
+  transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+  outline: none;
+}
+
+.search-box input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(197, 160, 89, 0.15);
+  background: #FFF;
+}
+
+body.dark-theme .search-box input:focus {
+  background: var(--card-bg);
+  box-shadow: 0 0 0 4px rgba(197, 160, 89, 0.1);
+}
+
+.search-box input::placeholder {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.search-clear {
+  position: absolute;
+  right: 8px;
+  background: var(--section-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.search-clear:hover {
+  background: #EF4444;
+  border-color: #EF4444;
+  color: #FFF;
+}
+
+.search-clear .lucide {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.category-filters {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
 }
 
 /* ====== ARCHIVE GRID ====== */

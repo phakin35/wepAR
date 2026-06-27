@@ -214,7 +214,7 @@ const btnTts = document.getElementById('btn-tts');
 // ----------------------------------------------------
 async function fetchArtifacts() {
   try {
-    const res = await fetch('assets/artifacts.json');
+    const res = await fetch('/api/artifacts');
     allArtifacts = await res.json();
     renderGrid();
     renderFeaturedGallery();
@@ -224,12 +224,17 @@ async function fetchArtifacts() {
       archiveGrid.innerHTML = `
         <div style="grid-column: 1/-1; text-align: center; color: #D94625; padding: 2rem;">
           <h3><i data-lucide="alert-triangle" class="icon-inline"></i> ไม่สามารถโหลดข้อมูลวัตถุโบราณได้</h3>
-          <p>ตรวจสอบไฟล์ assets/artifacts.json หรือการตั้งค่าโฮสต์ของคุณ</p>
+          <p>ตรวจสอบ API /api/artifacts หรือการตั้งค่าโฮสต์ของคุณ</p>
         </div>
       `;
       if (window.lucide) lucide.createIcons();
     }
   }
+}
+
+function resolveAssetPath(assetPath) {
+  if (!assetPath) return '';
+  return assetPath.startsWith('/') ? assetPath : `/${assetPath}`;
 }
 
 function renderFeaturedGallery() {
@@ -246,8 +251,8 @@ function renderFeaturedGallery() {
   }
 
   featuredGrid.innerHTML = featured.map(art => `
-    <div class="gallery-item" onclick="openLightbox('${art.image}', '${art.title} — ${art.age}')">
-      <img src="${art.image}" alt="${art.title}">
+    <div class="gallery-item" onclick="openLightbox('${resolveAssetPath(art.image)}', '${art.title} — ${art.age}')">
+      <img src="${resolveAssetPath(art.image)}" alt="${art.title}">
       <div class="gallery-overlay">
         <i data-lucide="zoom-in"></i>
         <span>ขยายภาพ ${art.title}</span>
@@ -296,7 +301,7 @@ function renderGrid() {
     <div class="archive-card" style="animation-delay: ${index * 0.06}s;">
       <div class="archive-card-image">
         <span class="archive-card-badge">${art.categoryThai}</span>
-        <img src="${art.image}" alt="${art.title}">
+        <img src="${resolveAssetPath(art.image)}" alt="${art.title}">
       </div>
       <div class="archive-card-info">
         <div>
@@ -442,7 +447,7 @@ window.openArtifactModal = function (id) {
   modalDescription.textContent = art.description;
 
   // Set image view
-  modalPhoto.src = art.image;
+  modalPhoto.src = resolveAssetPath(art.image);
   modalPhoto.alt = art.title;
 
   // Reset swap state

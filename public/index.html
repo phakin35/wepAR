@@ -21,8 +21,21 @@
   <header>
     <div class="nav-container">
       <div class="logo">
-        <span class="logo-icon"><i data-lucide="archive"></i></span>
-        <span class="logo-text">วัดท่าวัด Archive</span>
+        <div class="logo-icon-wrapper">
+          <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+            <defs>
+              <linearGradient id="logo-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#F5D061" />
+                <stop offset="50%" stop-color="#C5A059" />
+                <stop offset="100%" stop-color="#A4813E" />
+              </linearGradient>
+            </defs>
+            <path d="M16 2v4M13.5 6.5h5M12 9.5h8" stroke="url(#logo-gold)" stroke-width="2" stroke-linecap="round" />
+            <path d="M16 9.5C11.5 14.5 11.5 18 16 22c4.5-4 4.5-7.5 0-12.5z" stroke="url(#logo-gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="url(#logo-gold)" fill-opacity="0.15" />
+            <path d="M8 23h16M6 26.5h20" stroke="url(#logo-gold)" stroke-width="2.5" stroke-linecap="round" />
+          </svg>
+        </div>
+        <span class="logo-text">วัดท่าวัด <span class="logo-subtext">Archive</span></span>
       </div>
       <div class="nav-actions">
         <button class="theme-toggle" id="theme-toggle" aria-label="เปลี่ยนธีม">

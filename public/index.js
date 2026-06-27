@@ -115,8 +115,8 @@ function renderGrid() {
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const itemsToDisplay = filtered.slice(start, start + ITEMS_PER_PAGE);
 
-  archiveGrid.innerHTML = itemsToDisplay.map(art => `
-    <div class="archive-card">
+  archiveGrid.innerHTML = itemsToDisplay.map((art, index) => `
+    <div class="archive-card" style="animation-delay: ${index * 0.06}s;">
       <div class="archive-card-image">
         <span class="archive-card-badge">${art.categoryThai}</span>
         <img src="${art.image}" alt="${art.title}">

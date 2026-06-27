@@ -214,7 +214,7 @@ const btnTts = document.getElementById('btn-tts');
 // ----------------------------------------------------
 async function fetchArtifacts() {
   try {
-    const res = await fetch('/api/artifacts');
+    const res = await fetch('assets/artifacts.json');
     allArtifacts = await res.json();
     renderGrid();
     renderFeaturedGallery();
@@ -223,8 +223,8 @@ async function fetchArtifacts() {
     if (archiveGrid) {
       archiveGrid.innerHTML = `
         <div style="grid-column: 1/-1; text-align: center; color: #D94625; padding: 2rem;">
-          <h3><i data-lucide="alert-triangle" class="icon-inline"></i> ไม่สามารถเชื่อมต่อฐานข้อมูลได้</h3>
-          <p>กรุณาตรวจสอบว่า Node.js รันทำงานอยู่ตามปกติ</p>
+          <h3><i data-lucide="alert-triangle" class="icon-inline"></i> ไม่สามารถโหลดข้อมูลวัตถุโบราณได้</h3>
+          <p>ตรวจสอบไฟล์ assets/artifacts.json หรือการตั้งค่าโฮสต์ของคุณ</p>
         </div>
       `;
       if (window.lucide) lucide.createIcons();

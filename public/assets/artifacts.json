@@ -9,7 +9,7 @@
     "origin": "ขุดค้นพบ ณ ซากวิหารโบราณวัดเหนือ",
     "description": "พระพุทธรูปหินทรายแกะสลักในปางมารวิชัย ศิลปะผสมผสานขอมลพบุรีกับทวารวดี มีพระพักตร์เหลี่ยม ใบหูยาวจรดบ่า และพระเกศาแกะเป็นริ้วคล้ายเปลวเพลิง สะท้อนถึงการปราบมารและชัยชนะอันเป็นสิริมงคล",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_01.glb",
     "hotspots": [
       {
         "pos": "0m 0.85m 0.05m",
@@ -38,7 +38,7 @@
     "origin": "ขุดพบใต้ฐานโบสถ์เก่าของวัดกลาง",
     "description": "พระพุทธรูปปางสมาธิแกะสลักจากหินทรายสีเทา พระหัตถ์ทั้งสองวางหงายซ้อนกันบนพระเพลา (หน้าตัก) พระพักตร์แสดงความสงบระงับกิเลสอย่างลึกซึ้ง เหมาะสำหรับศูนย์รวมสมาธิในวัด",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_02.glb",
     "hotspots": [
       {
         "pos": "0m 0.85m 0.05m",
@@ -57,7 +57,7 @@
     "origin": "บริเวณรอบอุโบสถวัดมหาพรหมโพธิราช",
     "description": "ใบเสมาศิลาแกะสลักสัญลักษณ์วงล้อธรรมจักรตรงกลาง แผ่นหินทรายแดง แข็งแรงทนทาน ใช้ปักเขตวิสุงคามสีมาในการทำสังฆกรรมของพระสงฆ์ตั้งแต่ยุคแรกเริ่มก่อตั้งวัด",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_03.glb",
     "hotspots": []
   },
   {
@@ -70,7 +70,7 @@
     "origin": "ห้องพิพิธภัณฑ์วัดท่าวัดใต้",
     "description": "พานไม้แกะสลักลงรักปิดทองสำหรับประดิษฐานผ้าไตรจีวรในขบวนประเพณีแห่กฐินทางน้ำข้ามทะเลสาบหนองหาร งานบุญหนึ่งเดียวของชาวตำบลเหล่าปอแดง",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_04.glb",
     "hotspots": []
   },
   {
@@ -83,7 +83,7 @@
     "origin": "ขุดพบริมหนองหารใกล้บ้านท่าวัด",
     "description": "เครื่องปั้นดินเผาเนื้อดินหยาบ ตกแต่งผิวด้วยลายขูดขีดแนวตั้งสลับฟันปลา บรรจุสิ่งของเครื่องใช้โบราณและร่องรอยเมล็ดข้าว บ่งบอกความอุดมสมบูรณ์ในอดีต",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_05.glb",
     "hotspots": []
   },
   {
@@ -96,7 +96,7 @@
     "origin": "กรุเจดีย์เก่าบ้านท่าวัดเหนือ",
     "description": "พระเครื่องดินเผาขนาดเล็กทรงวงรี คล้ายเม็ดขนุน ขุดพบในกรุใต้ฐานเจดีย์โบราณ มีพุทธคุณด้านแคล้วคลาด เมตตามหานิยม นิยมห้อยบูชาเป็นเครื่องราง",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_06.glb",
     "hotspots": []
   },
   {
@@ -109,7 +109,7 @@
     "origin": "ขุดค้นพบในลานขุดโบราณคดีหนองหาร",
     "description": "กำไลข้อมือทองเหลืองผสมสำริดโบราณ สลักขีดลายฟันปลาสลับหัวใจ เป็นเครื่องประดับของสตรีมีฐานะในอดีต บ่งบอกถึงฝีมือช่างโลหะที่ก้าวหน้าในแถบแอ่งสกลนคร",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_07.glb",
     "hotspots": []
   },
   {
@@ -122,7 +122,7 @@
     "origin": "บริเวณไร่นาของราษฎรใกล้บ้านท่าวัด",
     "description": "หินแม่น้ำเนื้อละเอียดนำมาฝนขัดจนเรียบ คมด้านเดียว ใช้ผูกติดไม้ทำเป็นขวานตัดไม้หรือเครื่องมือป้องกันตัวในชีวิตประจำวันของมนุษย์ก่อนประวัติศาสตร์",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_08.glb",
     "hotspots": []
   },
   {
@@ -135,7 +135,7 @@
     "origin": "ซากเจดีย์ร้างใกล้อุโบสถหลังเดิม",
     "description": "แผ่นศิลาแลงแกะสลักขีดแนวโค้ง ลวดลายดอกไม้ป่า ใช้ประดับเหนือประตูทางเข้าประสาทศิลาขอมขนาดเล็กในชุมชนดั้งเดิมก่อนรวมเข้ากับวัดท่าวัด",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_09.glb",
     "hotspots": []
   },
   {
@@ -148,7 +148,7 @@
     "origin": "หอบูชาพระประธานกุฏิสงฆ์วัดใต้",
     "description": "พระพุทธรูปเนื้อสำริดหล่อโลหะ ทรงเครื่องราชาภรณ์ มงกุฎยอดแหลมตามตำรับช่างหลวงเวียงจันทน์ สะท้อนถึงการแผ่ขยายของวัฒนธรรมล้านช้างข้ามลุ่มน้ำโขงมาหนองหาร",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_10.glb",
     "hotspots": []
   },
   {
@@ -161,7 +161,7 @@
     "origin": "โฮมสเตย์กลุ่มทอผ้าย้อมครามบ้านท่าวัด",
     "description": "กี่ทอผ้าสร้างด้วยไม้เนื้อแข็งทั้งหลัง ใช้ในการถักทอเส้นฝ้ายย้อมครามธรรมชาติให้เป็นผ้าผืนเพื่อตัดเย็บเป็นเครื่องแต่งกายเอกลักษณ์ประจำถิ่น",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_11.glb",
     "hotspots": []
   },
   {
@@ -174,7 +174,7 @@
     "origin": "ศูนย์การเรียนรู้วิถีประมงหนองหาร",
     "description": "เครื่องจักสานไม้ไผ่รมควันเพื่อกันมอด รูปทรงคล้ายกระออมแต่ปากกว้างเปิดออกคล้ายแตร มีฝาปิดงาไม้ไผ่ป้องกันปลาโดดหนี ใช้คาดเอวของพรานปลาเวลาลุยน้ำจับปลาในหนองหาร",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_12.glb",
     "hotspots": []
   },
   {
@@ -187,7 +187,7 @@
     "origin": "หอกลองวัดมหาพรหมโพธิราช",
     "description": "กลองยาวประดิษฐ์ขึ้นจากต้นประดู่ขุดเจาะรูกลาง ขึงหน้าด้วยหนังวัวแท้ ขอบตกแต่งด้วยผ้าคราม ใช้บรรเลงในขบวนแห่ทางวัฒนธรรมและงานบุญกฐินทางน้ำ",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_13.glb",
     "hotspots": []
   },
   {
@@ -200,7 +200,7 @@
     "origin": "บ้านปราชญ์ดนตรีพื้นบ้านเหล่าปอแดง",
     "description": "เครื่องดนตรีประเภทเครื่องดีดของอีสาน ตัวพิณแกะสลักจากไม้ขนุน หัวกลึงเป็นลายพญานาค พัฒนาจาก 2 สายมาเป็น 3 สายเพื่อความกว้างของช่วงเสียงในการเล่นลายแห่",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_14.glb",
     "hotspots": []
   },
   {
@@ -213,7 +213,7 @@
     "origin": "วัดมหาพรหมโพธิราชสกลนคร",
     "description": "โครงสร้างพานพุ่มประดับบายศรีและดอกไม้ผึ้งทำมือ ใช้ในการถวายสักการะหลวงพ่อพระประธานในโบสถ์ เป็นศิลปหัตถกรรมเครื่องบูชาดอกไม้ประดิษฐ์สืบต่อกันมาในงานบุญพระธาตุ",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_15.glb",
     "hotspots": []
   },
   {
@@ -226,7 +226,7 @@
     "origin": "กลุ่มเป่าแคนบ้านท่าวัด",
     "description": "เครื่องดนตรีเป่าทำจากไม้ไผ่ซางขนาดเท่ากัน 16 เล่ม (ประกบคู่เรียงแปด) ใช้ท่อทองเหลืองขนาดเล็กคุมลิ้นเสียง ให้เสียงประสานที่เป็นเอกลักษณ์ขับกล่อมพิธีฟ้อนภูไท",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_16.glb",
     "hotspots": []
   },
   {
@@ -239,7 +239,7 @@
     "origin": "ก้นอ่าวท่าเรือประมงหนองหาร",
     "description": "หม้อก้นกลมเคลือบสารสีเขียวมะกอกบางๆ ได้รับอิทธิพลเตาสังคโลกสุโขทัย คาดว่าจมหายไปกับเรือค้าขายโบราณขณะล่องข้ามทะเลสาบหนองหารเข้าหาชุมชนท่าเรือวัด",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_17.glb",
     "hotspots": []
   },
   {
@@ -252,7 +252,7 @@
     "origin": "ลานวัดมหาพรหมโพธิราช",
     "description": "หน้ากากสลักหัววัวควายระบายสิสีสวยงาม ใช้สวมใส่ในพิธีขอฝนช่วงต้นฤดูทำนา เป็นตัวแทนขอบคุณควายและสัตว์เลี้ยงที่มีบุญคุณต่อวิถีเกษตรกรรมชาวหนองหาร",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_18.glb",
     "hotspots": []
   },
   {
@@ -265,7 +265,7 @@
     "origin": "หอไตรกลางน้ำหลังเดิมวัดท่าวัด",
     "description": "แผ่นใบลานจารอักษรธรรมและอักษรไทยน้อยด้วยเหล็กจารทาเขม่าไฟ บันทึกธรรมบท พระไตรปิฎก และตำรายาแผนไทยสมุนไพรโบราณ ประจำถิ่นอีสาน",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_19.glb",
     "hotspots": []
   },
   {
@@ -278,7 +278,7 @@
     "origin": "ขุดพบบริเวณเจดีย์ศิลาแลงโบราณ",
     "description": "ตะเกียงสำริดทรงจานมีที่เสียบไส้ตะเกียงตรงกลาง มีก้านจับโค้งยาวสำหรับเติมน้ำมันพืชหรือไขมันสัตว์เพื่อจุดให้แสงสว่างในการปฏิบัติวิปัสสนาของพระธุดงค์",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_20.glb",
     "hotspots": []
   },
   {
@@ -291,7 +291,7 @@
     "origin": "ใต้ถุนกุฏิพระครูโบราณเจ้าอาวาสองค์ก่อน",
     "description": "หินทรายสกัดเป็นรูปสระสี่เหลี่ยมเว้ากลางลึก ใช้คู่กับแท่งหินทรายทรงกระบอกสำหรับบดสมุนไพรรักษาไข้ป่าและโรคระบาดในอดีตของผู้ใหญ่บ้านและพระสงฆ์",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_21.glb",
     "hotspots": []
   },
   {
@@ -304,7 +304,7 @@
     "origin": "ท่าเรือประมงบ้านท่าวัด",
     "description": "แหถักจากด้ายในที่ละตาอย่างสม่ำเสมอถ่วงขอบด้วยลูกตะกั่วหล่อมือ อุปกรณ์ประมงพื้นบ้านโบราณที่ตกทอดรุ่นสู่รุ่น ใช้หาเลี้ยงชีพครอบครัวด้วยสัตว์น้ำหนองหาร",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_22.glb",
     "hotspots": []
   },
   {
@@ -317,7 +317,7 @@
     "origin": "บ่อน้ำศักดิ์สิทธิ์ริมหาดท่าวัด",
     "description": "ข่างตักน้ำแกะสลักจากกระบอกไม้ไผ่ขนาดใหญ่พร้อมด้ามไม้ยาวโค้ง ใช้ตักน้ำจากบ่อน้ำซึมธรรมชาติริมฝั่งน้ำหนองหารเพื่ออุปโภคบริโภคในยุคที่ไม่มีประปา",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_23.glb",
     "hotspots": []
   },
   {
@@ -330,7 +330,7 @@
     "origin": "โรงสีข้าวโบราณประจำตำบลเหล่าปอแดง",
     "description": "คันธนูทำจากไม้ไผ่เหลืองแก่ที่คัดสรรและผ่านกรรมวิธีอบลมควันเพื่อความเหนียวดัดงอโค้งสวยงาม ใช้ยิงกระสุนดินเหนียวในการล่าสัตว์ปีกเพื่อยังชีพ",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_24.glb",
     "hotspots": []
   },
   {
@@ -343,7 +343,7 @@
     "origin": "กลุ่มสตรีทอผ้าบ้านท่าวัด",
     "description": "เสื้อทอมือทำจากผ้าฝ้ายแท้ ย้อมสีครามธรรมชาติลวดลายกล้วยไม้ป่าและดอกพะยอม กระดุมทำจากเศษเปลือกหอยโข่งหนองหาร สัญลักษณ์อันทรงคุณค่าทางภูมิปัญญา",
     "image": "assets/images/buddha_image.png",
-    "model": "assets/models/buddha.glb",
+    "model": "assets/models/model_25.glb",
     "hotspots": []
   }
 ]

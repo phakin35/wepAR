@@ -6,13 +6,6 @@ let activeModalArtifact = null;
 let currentPage = 1;
 const ITEMS_PER_PAGE = 6;
 
-// Audio Synthesizer variables
-let audioCtx = null;
-let droneOsc1 = null;
-let droneOsc2 = null;
-let droneGain = null;
-let bellInterval = null;
-let isAudioPlaying = false;
 
 // Speech Synthesis (TTS) variables
 let ttsUtterance = null;
@@ -486,102 +479,6 @@ if (navToggle && navMenu) {
   });
 }
 
-// ----------------------------------------------------
-// 6. Ambient Temple Synthesizer (Web Audio API)
-// ----------------------------------------------------
-const audioBtn = document.getElementById('audio-btn');
-const audioText = document.getElementById('audio-text');
-
-function initAudio() {
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-  // Drone Gain
-  droneGain = audioCtx.createGain();
-  droneGain.gain.setValueAtTime(0.0, audioCtx.currentTime);
-  droneGain.connect(audioCtx.destination);
-
-  // Osc 1
-  droneOsc1 = audioCtx.createOscillator();
-  droneOsc1.type = 'triangle';
-  droneOsc1.frequency.setValueAtTime(65.41, audioCtx.currentTime);
-
-  // Osc 2
-  droneOsc2 = audioCtx.createOscillator();
-  droneOsc2.type = 'sine';
-  droneOsc2.frequency.setValueAtTime(97.99, audioCtx.currentTime);
-
-  const lowpass = audioCtx.createBiquadFilter();
-  lowpass.type = 'lowpass';
-  lowpass.frequency.setValueAtTime(150, audioCtx.currentTime);
-
-  droneOsc1.connect(lowpass);
-  droneOsc2.connect(lowpass);
-  lowpass.connect(droneGain);
-
-  droneOsc1.start();
-  droneOsc2.start();
-
-  playBellStrike();
-
-  bellInterval = setInterval(() => {
-    if (isAudioPlaying) {
-      playBellStrike();
-    }
-  }, 12000);
-}
-
-function playBellStrike() {
-  if (!audioCtx || audioCtx.state === 'suspended') return;
-  const now = audioCtx.currentTime;
-  const frequencies = [440, 554.37, 659.25, 880];
-
-  frequencies.forEach((freq, index) => {
-    const osc = audioCtx.createOscillator();
-    const gainNode = audioCtx.createGain();
-    osc.type = index === 0 ? 'sine' : 'triangle';
-    osc.frequency.setValueAtTime(freq, now);
-    osc.detune.setValueAtTime((Math.random() - 0.5) * 15, now);
-
-    gainNode.gain.setValueAtTime(0, now);
-    gainNode.gain.linearRampToValueAtTime(index === 0 ? 0.08 : 0.03, now + 0.05);
-    gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 4.5 + index);
-
-    osc.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
-
-    osc.start(now);
-    osc.stop(now + 8.5);
-  });
-}
-
-function toggleAudio() {
-  if (!audioCtx) {
-    initAudio();
-  }
-
-  if (isAudioPlaying) {
-    droneGain.gain.linearRampToValueAtTime(0.0, audioCtx.currentTime + 1.5);
-    audioBtn.classList.remove('playing');
-    audioBtn.innerHTML = '<i data-lucide="volume-2"></i>';
-    if (window.lucide) lucide.createIcons();
-    if (audioText) audioText.innerHTML = 'เปิดเสียงระฆังบรรเลง';
-    isAudioPlaying = false;
-  } else {
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
-    droneGain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 2.0);
-    audioBtn.classList.add('playing');
-    audioBtn.innerHTML = '<i data-lucide="volume-x"></i>';
-    if (window.lucide) lucide.createIcons();
-    if (audioText) audioText.innerHTML = 'ปิดเสียงระฆัง';
-    isAudioPlaying = true;
-  }
-}
-
-if (audioBtn) {
-  audioBtn.addEventListener('click', toggleAudio);
-}
 
 // ----------------------------------------------------
 // Lightbox Controllers for Sacred Gallery

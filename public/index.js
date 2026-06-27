@@ -9,6 +9,183 @@ const ITEMS_PER_PAGE = 6;
 
 // Speech Synthesis (TTS) variables
 let ttsUtterance = null;
+let thaiVoice = null;
+let ttsChunks = [];
+let currentChunkIndex = 0;
+let isTtsPlaying = false;
+
+function loadVoices() {
+  if (typeof window !== 'undefined' && window.speechSynthesis) {
+    const voices = window.speechSynthesis.getVoices();
+    const thaiVoices = voices.filter(v => v.lang === 'th-TH' || v.lang.startsWith('th'));
+    if (thaiVoices.length > 0) {
+      thaiVoice = thaiVoices.find(v => 
+        v.name.toLowerCase().includes('google') || 
+        v.name.toLowerCase().includes('natural') || 
+        v.name.toLowerCase().includes('premium') ||
+        v.name.toLowerCase().includes('online')
+      ) || thaiVoices[0];
+    }
+  }
+}
+
+if (typeof window !== 'undefined' && window.speechSynthesis) {
+  loadVoices();
+  if (window.speechSynthesis.onvoiceschanged !== undefined) {
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+  }
+}
+
+// ----------------------------------------------------
+// TTS Preprocessing: Fix Thai pronunciation for specific terms
+// ----------------------------------------------------
+function preprocessThaiTextForTTS(text) {
+  if (!text) return '';
+  
+  let t = text;
+  
+  // Expand abbreviations
+  t = t.replace(/พ\.ศ\./g, 'พุทธศักราช');
+  t = t.replace(/ค\.ศ\./g, 'คริสต์ศักราช');
+  t = t.replace(/ซม\./g, 'เซนติเมตร');
+  t = t.replace(/กก\./g, 'กิโลกรัม');
+  
+  // Fix Buddhist art pronunciation
+  t = t.replace(/ขัดสมาธิ/g, 'ขัดสะหมาด');
+  t = t.replace(/พระเพลา/g, 'พระเพลา');
+  t = t.replace(/พระนลาฎ/g, 'พระนะลาด');
+  t = t.replace(/พระนลาฏ/g, 'พระนะลาด');
+  t = t.replace(/นลาฎ/g, 'นะลาด');
+  t = t.replace(/นลาฏ/g, 'นะลาด');
+  t = t.replace(/พุทธลักษณะ/g, 'พุดทะลักษณะ');
+  t = t.replace(/สังฆาฏิ/g, 'สังคาติ');
+  t = t.replace(/ประภามณฑล/g, 'ประพามนทน');
+  t = t.replace(/พระเนตร/g, 'พระเนด');
+  t = t.replace(/พระโอษฐ์/g, 'พระโอด');
+  t = t.replace(/พระกรรณ/g, 'พระกัน');
+  t = t.replace(/พระขนง/g, 'พระขะหนง');
+
+  // Clean up extra spaces
+  t = t.replace(/\s+/g, ' ').trim();
+  
+  return t;
+}
+
+// ----------------------------------------------------
+// TTS Chunking: Split into meaningful phrases (NOT individual words)
+// Split at commas only, keeping each chunk under maxLen chars.
+// If a single phrase is still too long, split at the last space before maxLen.
+// ----------------------------------------------------
+function splitTextIntoChunks(text, maxLen) {
+  // First split by comma to get natural phrases
+  const phrases = text.split(/\s*,\s*/);
+  const chunks = [];
+  
+  for (const phrase of phrases) {
+    const trimmed = phrase.trim();
+    if (!trimmed) continue;
+    
+    if (trimmed.length <= maxLen) {
+      chunks.push(trimmed);
+    } else {
+      // Phrase is too long, split at last space before maxLen
+      let remaining = trimmed;
+      while (remaining.length > maxLen) {
+        let splitAt = remaining.lastIndexOf(' ', maxLen);
+        if (splitAt <= 0) splitAt = maxLen; // No space found, force split
+        chunks.push(remaining.substring(0, splitAt).trim());
+        remaining = remaining.substring(splitAt).trim();
+      }
+      if (remaining) chunks.push(remaining);
+    }
+  }
+  
+  return chunks;
+};
+
+// ----------------------------------------------------
+// TTS Execution Logic (Native SpeechSynthesis with 300ms natural clause delays)
+// ----------------------------------------------------
+function speakArtifactDescription() {
+  if (!activeModalArtifact) return;
+
+  if (isTtsPlaying) {
+    stopTTS();
+    return;
+  }
+
+  const textToRead = `วัตถุโบราณชิ้นนี้คือ ${activeModalArtifact.title}, จัดอยู่ในหมวดหมู่ ${activeModalArtifact.categoryThai}, อายุสมัยคือ ${activeModalArtifact.age}, แหล่งที่พบคือ ${activeModalArtifact.origin}, ประวัติคือ ${activeModalArtifact.description}`;
+  const preprocessed = preprocessThaiTextForTTS(textToRead);
+  
+  // Split into chunks of max 120 chars to prevent slurring
+  ttsChunks = splitTextIntoChunks(preprocessed, 120);
+  currentChunkIndex = 0;
+  isTtsPlaying = true;
+
+  if (btnTts) {
+    btnTts.classList.add('playing');
+    btnTts.innerHTML = '<i data-lucide="square" class="icon-inline"></i> หยุดเล่นเสียง';
+    if (window.lucide) lucide.createIcons();
+  }
+
+  speakNextChunk();
+}
+
+function speakNextChunk() {
+  if (!isTtsPlaying) return;
+
+  if (currentChunkIndex >= ttsChunks.length) {
+    stopTTS();
+    return;
+  }
+
+  const chunkText = ttsChunks[currentChunkIndex];
+  ttsUtterance = new SpeechSynthesisUtterance(chunkText);
+  ttsUtterance.lang = 'th-TH';
+  if (thaiVoice) {
+    ttsUtterance.voice = thaiVoice;
+  }
+  
+  // Comfortable slow-normal rate for elderly (0.85 is clear and natural, not too fast)
+  ttsUtterance.rate = 0.85;
+  ttsUtterance.pitch = 1.0;
+
+  ttsUtterance.onend = () => {
+    currentChunkIndex++;
+    // 300ms pause lets the browser engine fully speak the final syllable of the clause
+    // without getting cut off prematurely ("ตัดคำไม่สุด") and mimics natural human breathing.
+    setTimeout(() => {
+      speakNextChunk();
+    }, 300);
+  };
+
+  ttsUtterance.onerror = (e) => {
+    console.error("Native TTS Error:", e);
+    if (e.error === 'interrupted') return;
+    currentChunkIndex++;
+    setTimeout(() => {
+      speakNextChunk();
+    }, 300);
+  };
+
+  window.speechSynthesis.speak(ttsUtterance);
+}
+
+function stopTTS() {
+  isTtsPlaying = false;
+  ttsChunks = [];
+  currentChunkIndex = 0;
+
+  if (window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+  }
+
+  if (btnTts) {
+    btnTts.classList.remove('playing');
+    btnTts.innerHTML = '<i data-lucide="volume-2" class="icon-inline"></i> ฟังเสียงบรรยาย';
+    if (window.lucide) lucide.createIcons();
+  }
+}
 
 // Elements
 const archiveGrid = document.getElementById('archive-grid');
@@ -367,59 +544,6 @@ if (btnBackToPhoto) {
     modalPhotoView.style.display = 'flex';
     if (modelViewerPlaceholder) modelViewerPlaceholder.innerHTML = '';
   });
-}
-
-// ----------------------------------------------------
-// 4. Text-To-Speech (TTS) for Elderly Accessibility
-// ----------------------------------------------------
-function speakArtifactDescription() {
-  if (!activeModalArtifact) return;
-
-  if (window.speechSynthesis.speaking) {
-    stopTTS();
-    return;
-  }
-
-  const textToRead = `${activeModalArtifact.title}. หมวดหมู่ ${activeModalArtifact.categoryThai}. อายุสมัย ${activeModalArtifact.age}. แหล่งค้นพบในพื้นที่ ${activeModalArtifact.origin}. ประวัติความเป็นมาโดยย่อ ${activeModalArtifact.description}`;
-
-  ttsUtterance = new SpeechSynthesisUtterance(textToRead);
-  ttsUtterance.lang = 'th-TH';
-
-  // Set slightly slower rate for elderly understanding
-  ttsUtterance.rate = 0.85;
-  ttsUtterance.pitch = 1.0;
-
-  ttsUtterance.onstart = () => {
-    btnTts.classList.add('playing');
-    btnTts.innerHTML = '<i data-lucide="square" class="icon-inline"></i> หยุดเล่นเสียงอ่านประวัติ';
-    if (window.lucide) lucide.createIcons();
-  };
-
-  ttsUtterance.onend = () => {
-    btnTts.classList.remove('playing');
-    btnTts.innerHTML = '<i data-lucide="volume-2" class="icon-inline"></i> กดเพื่อฟังเสียงอ่านประวัติให้ฟัง';
-    if (window.lucide) lucide.createIcons();
-  };
-
-  ttsUtterance.onerror = () => {
-    btnTts.classList.remove('playing');
-    btnTts.innerHTML = '<i data-lucide="volume-2" class="icon-inline"></i> กดเพื่อฟังเสียงอ่านประวัติให้ฟัง';
-    if (window.lucide) lucide.createIcons();
-  };
-
-  // Speak
-  window.speechSynthesis.speak(ttsUtterance);
-}
-
-function stopTTS() {
-  if (window.speechSynthesis.speaking) {
-    window.speechSynthesis.cancel();
-  }
-  if (btnTts) {
-    btnTts.classList.remove('playing');
-    btnTts.innerHTML = '<i data-lucide="volume-2" class="icon-inline"></i> กดเพื่อฟังเสียงอ่านประวัติให้ฟัง';
-    if (window.lucide) lucide.createIcons();
-  }
 }
 
 if (btnTts) {

@@ -215,19 +215,31 @@ const btnTts = document.getElementById('btn-tts');
 async function fetchArtifacts() {
   try {
     const res = await fetch('/api/artifacts');
+    if (!res.ok) throw new Error(`API returned ${res.status}`);
     allArtifacts = await res.json();
-    renderGrid();
-    renderFeaturedGallery();
   } catch (err) {
-    console.error("Error fetching artifacts database", err);
-    if (archiveGrid) {
-      archiveGrid.innerHTML = `
-        <div style="grid-column: 1/-1; text-align: center; color: #D94625; padding: 2rem;">
-          <h3><i data-lucide="alert-triangle" class="icon-inline"></i> ไม่สามารถโหลดข้อมูลวัตถุโบราณได้</h3>
-          <p>ตรวจสอบ API /api/artifacts หรือการตั้งค่าโฮสต์ของคุณ</p>
-        </div>
-      `;
-      if (window.lucide) lucide.createIcons();
+    console.warn("API /api/artifacts failed, falling back to assets/artifacts.json", err);
+    try {
+      const res = await fetch('assets/artifacts.json');
+      if (!res.ok) throw new Error(`Static JSON returned ${res.status}`);
+      allArtifacts = await res.json();
+    } catch (fallbackErr) {
+      console.error("Error fetching artifacts database", fallbackErr);
+      if (archiveGrid) {
+        archiveGrid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; color: #D94625; padding: 2rem;">
+            <h3><i data-lucide="alert-triangle" class="icon-inline"></i> ไม่สามารถโหลดข้อมูลวัตถุโบราณได้</h3>
+            <p>ตรวจสอบไฟล์ assets/artifacts.json หรือการตั้งค่าโฮสต์ของคุณ</p>
+          </div>
+        `;
+        if (window.lucide) lucide.createIcons();
+      }
+      return;
+    }
+  }
+  renderGrid();
+  renderFeaturedGallery();
+}      if (window.lucide) lucide.createIcons();
     }
   }
 }
@@ -500,7 +512,7 @@ if (btnActivate3D) {
     modelViewerPlaceholder.innerHTML = `
       <model-viewer 
         id="modal-viewer"
-        src="${activeModalArtifact.model}" 
+        src="${resolveAssetPath(activeModalArtifact.model)}" 
         ar 
         ar-modes="webxr scene-viewer quick-look" 
         camera-controls 

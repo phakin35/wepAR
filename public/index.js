@@ -523,8 +523,6 @@ if (btnActivate3D) {
       <model-viewer 
         id="modal-viewer"
         src="${resolveAssetPath(activeModalArtifact.model)}" 
-        ar 
-        ar-modes="webxr scene-viewer quick-look" 
         camera-controls 
         tone-mapping="neutral" 
         shadow-intensity="1"
@@ -533,7 +531,6 @@ if (btnActivate3D) {
         alt="${activeModalArtifact.title}"
         style="width: 100%; height: 100%;">
         ${hotspotsHtml}
-        <button slot="ar-button" class="ar-button">เปิดกล้องส่องพระในบ้านคุณ (AR)</button>
       </model-viewer>
     `;
 

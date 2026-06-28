@@ -3,7 +3,7 @@ const path = require('path');
 const artifacts = require('../data/artifacts');
 const { mapArtifactsForRuntime } = require('../data/cdn');
 
-const useCdn = process.env.VERCEL === '1' || process.env.USE_CDN === '1';
+const useCdn = !!(process.env.VERCEL || process.env.USE_CDN === '1');
 const output = mapArtifactsForRuntime(artifacts, useCdn);
 
 const jsonPath = path.join(__dirname, '..', 'public', 'assets', 'artifacts.json');

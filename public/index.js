@@ -8,21 +8,18 @@ const ITEMS_PER_PAGE = 6;
 
 
 // Speech Synthesis (TTS) variables
+let ttsUtterance = null;
+let thaiVoice = null;
 let ttsChunks = [];
 let currentChunkIndex = 0;
 let isTtsPlaying = false;
-let ttsAudioElement = null;       // Google Translate TTS (primary — same voice everywhere)
-let ttsUseNativeFallback = false;  // If Google TTS fails, switch entire session to native
-let ttsUtterance = null;           // Native SpeechSynthesis fallback
-let thaiVoice = null;              // Best available native Thai voice (fallback only)
-let ttsKeepAliveTimer = null;
 
-// Load native voices as fallback (only used if Google Translate TTS is unavailable)
 function loadVoices() {
   if (typeof window !== 'undefined' && window.speechSynthesis) {
     const voices = window.speechSynthesis.getVoices();
     const thaiVoices = voices.filter(v => v.lang === 'th-TH' || v.lang.startsWith('th'));
     if (thaiVoices.length > 0) {
+      // Priority: Siri/Kanya/Narisa (iOS/Safari) > Google/Online/Natural (Android/Chrome) > Default Thai
       const priorityKeywords = ['siri', 'kanya', 'narisa', 'google', 'natural', 'premium', 'online'];
       let bestVoice = null;
       for (const keyword of priorityKeywords) {
@@ -30,6 +27,7 @@ function loadVoices() {
         if (bestVoice) break;
       }
       thaiVoice = bestVoice || thaiVoices[0];
+      console.log('TTS Active Voice:', thaiVoice.name, thaiVoice.lang);
     }
   }
 }
@@ -77,47 +75,51 @@ function preprocessThaiTextForTTS(text) {
 }
 
 // ----------------------------------------------------
-// TTS Chunking: Merge small phrases into smooth blocks.
-// Uses 150-char limit for Google Translate TTS compatibility.
-// Keeps commas between merged phrases for natural pauses.
+// TTS Chunking: Split into clear, natural phrases by spaces/commas.
+// Prevents words from being split in half, which causes slurring.
+// Uses a safe length (80 chars) for maximum clarity and compatibility.
 // ----------------------------------------------------
-function splitTextIntoChunks(text, maxLen) {
-  const rawPhrases = text.split(',').map(p => p.trim()).filter(p => p.length > 0);
+function splitTextIntoChunks(text, maxLen = 80) {
+  const parts = text.split(/[\s,;\n\t\•]+/);
   const chunks = [];
   let currentChunk = '';
 
-  for (const phrase of rawPhrases) {
-    if (currentChunk && (currentChunk.length + phrase.length + 2) > maxLen) {
+  for (const part of parts) {
+    const trimmed = part.trim();
+    if (!trimmed) continue;
+
+    if (currentChunk && (currentChunk.length + trimmed.length + 1) > maxLen) {
       chunks.push(currentChunk);
       currentChunk = '';
     }
-    
-    if (phrase.length > maxLen) {
-      if (currentChunk) {
-        chunks.push(currentChunk);
-        currentChunk = '';
-      }
-      let remaining = phrase;
+
+    if (trimmed.length > maxLen) {
+      let remaining = trimmed;
       while (remaining.length > maxLen) {
-        let splitAt = remaining.lastIndexOf(' ', maxLen);
-        if (splitAt <= 0) splitAt = maxLen;
-        chunks.push(remaining.substring(0, splitAt).trim());
-        remaining = remaining.substring(splitAt).trim();
+        chunks.push(remaining.substring(0, maxLen));
+        remaining = remaining.substring(maxLen);
       }
-      if (remaining) currentChunk = remaining;
+      if (remaining) {
+        currentChunk = remaining;
+      }
     } else {
-      currentChunk = currentChunk ? (currentChunk + ', ' + phrase) : phrase;
+      if (currentChunk) {
+        currentChunk += ' ' + trimmed;
+      } else {
+        currentChunk = trimmed;
+      }
     }
   }
-  
-  if (currentChunk) chunks.push(currentChunk);
-  
+
+  if (currentChunk) {
+    chunks.push(currentChunk);
+  }
+
   return chunks;
 }
 
 // ----------------------------------------------------
-// TTS Execution — Google Translate TTS (same voice on ALL platforms)
-// Falls back to native SpeechSynthesis only if Google TTS is blocked.
+// TTS Execution: Native SpeechSynthesis with Siri/Kanya voice priority
 // ----------------------------------------------------
 function speakArtifactDescription() {
   if (!activeModalArtifact) return;
@@ -127,21 +129,16 @@ function speakArtifactDescription() {
     return;
   }
 
-  // CRITICAL: Create Audio element synchronously inside user gesture for iOS unlock
-  if (!ttsAudioElement) {
-    ttsAudioElement = new Audio();
-  }
-  // Play a tiny silent WAV to unlock iOS/Safari audio playback restrictions
-  ttsAudioElement.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAAA';
-  ttsAudioElement.play().catch(() => {});
+  // Ensure voices are loaded (e.g. if loaded dynamically late)
+  loadVoices();
 
   const textToRead = `วัตถุโบราณชิ้นนี้คือ ${activeModalArtifact.title}, จัดอยู่ในหมวดหมู่ ${activeModalArtifact.categoryThai}, อายุสมัยคือ ${activeModalArtifact.age}, แหล่งที่พบคือ ${activeModalArtifact.origin}, ประวัติคือ ${activeModalArtifact.description}`;
   const preprocessed = preprocessThaiTextForTTS(textToRead);
   
-  ttsChunks = splitTextIntoChunks(preprocessed, 150);
+  // 80 characters max to prevent slurring and avoid engine timeouts
+  ttsChunks = splitTextIntoChunks(preprocessed, 80);
   currentChunkIndex = 0;
   isTtsPlaying = true;
-  ttsUseNativeFallback = false;
 
   if (btnTts) {
     btnTts.classList.add('playing');
@@ -149,124 +146,59 @@ function speakArtifactDescription() {
     if (window.lucide) lucide.createIcons();
   }
 
-  // Small delay to let the silent audio unlock complete before real playback
-  setTimeout(() => {
-    speakNextChunk();
-  }, 150);
+  speakNextChunk();
 }
 
 function speakNextChunk() {
   if (!isTtsPlaying) return;
+
   if (currentChunkIndex >= ttsChunks.length) {
     stopTTS();
     return;
   }
 
-  // Route to the correct engine for the entire session
-  if (ttsUseNativeFallback) {
-    speakChunkNative(ttsChunks[currentChunkIndex]);
-  } else {
-    speakChunkGoogle(ttsChunks[currentChunkIndex]);
-  }
-}
+  if (!window.speechSynthesis) return;
 
-// --- Primary: Google Translate TTS (identical voice on iOS, Android, Desktop) ---
-function speakChunkGoogle(chunkText) {
-  // Ensure handlers from previous chunk are fully cleared
-  ttsAudioElement.onended = null;
-  ttsAudioElement.onerror = null;
-  ttsAudioElement.onabort = null;
-
-  const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=th&client=tw-ob&q=${encodeURIComponent(chunkText)}`;
-  ttsAudioElement.src = url;
-
-  // Single-fire guard: ensures only ONE callback triggers the next chunk
-  let handled = false;
-  const advance = () => {
-    if (handled || !isTtsPlaying) return;
-    handled = true;
-    currentChunkIndex++;
-    setTimeout(speakNextChunk, 250);
-  };
-
-  const switchToNative = () => {
-    if (handled || !isTtsPlaying) return;
-    handled = true;
-    console.warn('Google TTS unavailable — switching to native SpeechSynthesis for this session');
-    ttsUseNativeFallback = true;
-    // Retry the same chunk with native engine (don't skip it)
-    speakChunkNative(chunkText);
-  };
-
-  ttsAudioElement.onended = advance;
-  ttsAudioElement.onerror = switchToNative;
-
-  ttsAudioElement.play().catch(switchToNative);
-}
-
-// --- Fallback: Native SpeechSynthesis (only if Google TTS is completely blocked) ---
-function speakChunkNative(chunkText) {
-  if (!isTtsPlaying) return;
-
-  // Cancel any lingering speech
+  // Cancel any previous utterance to reset engine and avoid the iOS freeze bug
   window.speechSynthesis.cancel();
 
+  const chunkText = ttsChunks[currentChunkIndex];
   ttsUtterance = new SpeechSynthesisUtterance(chunkText);
   ttsUtterance.lang = 'th-TH';
+  
   if (thaiVoice) {
     ttsUtterance.voice = thaiVoice;
   }
   
-  ttsUtterance.rate = 0.88;
+  // Clear, slow reading speed for perfect word articulation
+  ttsUtterance.rate = 0.85;
   ttsUtterance.pitch = 1.0;
 
   ttsUtterance.onend = () => {
-    clearKeepAlive();
     currentChunkIndex++;
-    setTimeout(speakNextChunk, 250);
+    // Small delay between segments for natural breathing pause
+    setTimeout(() => {
+      speakNextChunk();
+    }, 300);
   };
 
   ttsUtterance.onerror = (e) => {
-    clearKeepAlive();
+    console.error("SpeechSynthesis error:", e);
     if (e.error === 'interrupted' || e.error === 'canceled') return;
     currentChunkIndex++;
-    setTimeout(speakNextChunk, 250);
+    setTimeout(() => {
+      speakNextChunk();
+    }, 300);
   };
 
+  // Play the utterance
   window.speechSynthesis.speak(ttsUtterance);
-  startKeepAlive();
-}
-
-function startKeepAlive() {
-  clearKeepAlive();
-  ttsKeepAliveTimer = setInterval(() => {
-    if (window.speechSynthesis && window.speechSynthesis.speaking) {
-      window.speechSynthesis.pause();
-      window.speechSynthesis.resume();
-    }
-  }, 10000);
-}
-
-function clearKeepAlive() {
-  if (ttsKeepAliveTimer) {
-    clearInterval(ttsKeepAliveTimer);
-    ttsKeepAliveTimer = null;
-  }
 }
 
 function stopTTS() {
   isTtsPlaying = false;
   ttsChunks = [];
   currentChunkIndex = 0;
-  clearKeepAlive();
-
-  if (ttsAudioElement) {
-    ttsAudioElement.onended = null;
-    ttsAudioElement.onerror = null;
-    ttsAudioElement.onabort = null;
-    ttsAudioElement.pause();
-    ttsAudioElement.src = '';
-  }
 
   if (window.speechSynthesis) {
     window.speechSynthesis.cancel();

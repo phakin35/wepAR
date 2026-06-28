@@ -1,6 +1,7 @@
-const app = require('../server');
+const artifacts = require('../data/artifacts');
 
-module.exports = async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.status(200).json(app.artifacts || []);
+module.exports = (req, res) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
+  res.status(200).json(artifacts);
 };

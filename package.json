@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "echo 'Static site ready for deployment'"
+    "build": "node scripts/sync-artifacts.js",
+    "sync-artifacts": "node scripts/sync-artifacts.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

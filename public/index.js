@@ -213,42 +213,49 @@ const btnTts = document.getElementById('btn-tts');
 // 1. Fetch and Render Artifacts
 // ----------------------------------------------------
 async function fetchArtifacts() {
-  let artifactsLoaded = false;
-  
-  // Try 1: API endpoint (for Node.js backends)
-  try {
-    const res = await fetch('/api/artifacts');
-    if (!res.ok) throw new Error(`API returned ${res.status}`);
-    allArtifacts = await res.json();
-  } catch (err) {
-    console.warn("API /api/artifacts failed, falling back to assets/artifacts.json", err);
+  const sources = [
+    '/api/artifacts',
+    '/assets/artifacts.json',
+    'assets/artifacts.json'
+  ];
+
+  for (const source of sources) {
     try {
-      const res = await fetch('assets/artifacts.json');
-      if (!res.ok) throw new Error(`Static JSON returned ${res.status}`);
+      const res = await fetch(source);
+      if (!res.ok) continue;
       allArtifacts = await res.json();
-    } catch (fallbackErr) {
-      console.error("Error fetching artifacts database", fallbackErr);
-      if (archiveGrid) {
-        archiveGrid.innerHTML = `
-          <div style="grid-column: 1/-1; text-align: center; color: #D94625; padding: 2rem;">
-            <h3><i data-lucide="alert-triangle" class="icon-inline"></i> ไม่สามารถโหลดข้อมูลวัตถุโบราณได้</h3>
-            <p>ตรวจสอบไฟล์ assets/artifacts.json หรือการตั้งค่าโฮสต์ของคุณ</p>
-          </div>
-        `;
-        if (window.lucide) lucide.createIcons();
+      if (Array.isArray(allArtifacts) && allArtifacts.length > 0) {
+        console.log(`Loaded ${allArtifacts.length} artifacts from ${source}`);
+        break;
       }
-      return;
+    } catch (err) {
+      console.warn(`Failed to load artifacts from ${source}`, err);
     }
   }
+
+  if (!Array.isArray(allArtifacts) || allArtifacts.length === 0) {
+    console.error('Error fetching artifacts database');
+    if (archiveGrid) {
+      archiveGrid.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; color: #D94625; padding: 2rem;">
+          <h3><i data-lucide="alert-triangle" class="icon-inline"></i> ไม่สามารถโหลดข้อมูลวัตถุโบราณได้</h3>
+          <p>ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต และลองรีเฟรชหน้านี้อีกครั้ง</p>
+        </div>
+      `;
+      if (window.lucide) lucide.createIcons();
+    }
+    return;
+  }
+
   renderGrid();
   renderFeaturedGallery();
-}      if (window.lucide) lucide.createIcons();
-    
-  
-
+}
 
 function resolveAssetPath(assetPath) {
   if (!assetPath) return '';
+  if (assetPath.startsWith('http://') || assetPath.startsWith('https://')) {
+    return assetPath;
+  }
   return assetPath.startsWith('/') ? assetPath : `/${assetPath}`;
 }
 
@@ -515,7 +522,7 @@ if (btnActivate3D) {
     modelViewerPlaceholder.innerHTML = `
       <model-viewer 
         id="modal-viewer"
-        src="${activeModalArtifact.model}" 
+        src="${resolveAssetPath(activeModalArtifact.model)}" 
         ar 
         ar-modes="webxr scene-viewer quick-look" 
         camera-controls 

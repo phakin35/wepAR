@@ -243,9 +243,9 @@ async function fetchArtifacts() {
   renderGrid();
   renderFeaturedGallery();
 }      if (window.lucide) lucide.createIcons();
-    }
-  }
-}
+    
+  
+
 
 function resolveAssetPath(assetPath) {
   if (!assetPath) return '';

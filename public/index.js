@@ -53,7 +53,9 @@ function preprocessThaiTextForTTS(text) {
   t = t.replace(/ซม\./g, 'เซนติเมตร');
   t = t.replace(/กก\./g, 'กิโลกรัม');
   
-  // Fix Buddhist art pronunciation
+  // Fix Buddhist art and general terms pronunciation for native engines (iOS & Windows)
+  t = t.replace(/พระพุทธรูป/g, 'พระพุดทะรูป');
+  t = t.replace(/พุทธรูป/g, 'พุดทะรูป');
   t = t.replace(/ขัดสมาธิ/g, 'ขัดสะหมาด');
   t = t.replace(/พระเพลา/g, 'พระเพลา');
   t = t.replace(/พระนลาฎ/g, 'พระนะลาด');
@@ -75,44 +77,41 @@ function preprocessThaiTextForTTS(text) {
 }
 
 // ----------------------------------------------------
-// TTS Chunking: Split into clear, natural phrases by spaces/commas.
-// Prevents words from being split in half, which causes slurring.
-// Uses a safe length (80 chars) for maximum clarity and compatibility.
+// TTS Chunking: Split into clear, natural phrases by existing spaces/commas.
+// Prevents words from being split in half, which causes slurring/wrong pronunciation.
+// Uses a safe length (120 chars) and leaves original spacing intact.
 // ----------------------------------------------------
-function splitTextIntoChunks(text, maxLen = 80) {
-  const parts = text.split(/[\s,;\n\t\•]+/);
+function splitTextIntoChunks(text, maxLen = 120) {
   const chunks = [];
-  let currentChunk = '';
+  let remaining = text.replace(/\s+/g, ' ').trim(); // Normalize spaces
 
-  for (const part of parts) {
-    const trimmed = part.trim();
-    if (!trimmed) continue;
-
-    if (currentChunk && (currentChunk.length + trimmed.length + 1) > maxLen) {
-      chunks.push(currentChunk);
-      currentChunk = '';
+  while (remaining.length > 0) {
+    if (remaining.length <= maxLen) {
+      chunks.push(remaining);
+      break;
     }
 
-    if (trimmed.length > maxLen) {
-      let remaining = trimmed;
-      while (remaining.length > maxLen) {
-        chunks.push(remaining.substring(0, maxLen));
-        remaining = remaining.substring(maxLen);
-      }
-      if (remaining) {
-        currentChunk = remaining;
-      }
+    // Find the last space or comma within the next maxLen characters
+    let splitIndex = -1;
+    const sub = remaining.substring(0, maxLen);
+    
+    const commaIndex = sub.lastIndexOf(',');
+    const spaceIndex = sub.lastIndexOf(' ');
+
+    if (commaIndex !== -1 && commaIndex > maxLen * 0.4) {
+      splitIndex = commaIndex + 1; // Split after comma
+    } else if (spaceIndex !== -1 && spaceIndex > maxLen * 0.4) {
+      splitIndex = spaceIndex; // Split at space
     } else {
-      if (currentChunk) {
-        currentChunk += ' ' + trimmed;
-      } else {
-        currentChunk = trimmed;
-      }
+      // No good boundary found, split at maxLen
+      splitIndex = maxLen;
     }
-  }
 
-  if (currentChunk) {
-    chunks.push(currentChunk);
+    const chunk = remaining.substring(0, splitIndex).trim();
+    if (chunk) {
+      chunks.push(chunk);
+    }
+    remaining = remaining.substring(splitIndex).trim();
   }
 
   return chunks;
@@ -132,11 +131,12 @@ function speakArtifactDescription() {
   // Ensure voices are loaded (e.g. if loaded dynamically late)
   loadVoices();
 
-  const textToRead = `วัตถุโบราณชิ้นนี้คือ ${activeModalArtifact.title}, จัดอยู่ในหมวดหมู่ ${activeModalArtifact.categoryThai}, อายุสมัยคือ ${activeModalArtifact.age}, แหล่งที่พบคือ ${activeModalArtifact.origin}, ประวัติคือ ${activeModalArtifact.description}`;
+  // Changed "ประวัติคือ" to "ลักษณะคือ"
+  const textToRead = `วัตถุโบราณชิ้นนี้คือ ${activeModalArtifact.title}, จัดอยู่ในหมวดหมู่ ${activeModalArtifact.categoryThai}, อายุสมัยคือ ${activeModalArtifact.age}, แหล่งที่พบคือ ${activeModalArtifact.origin}, ลักษณะคือ ${activeModalArtifact.description}`;
   const preprocessed = preprocessThaiTextForTTS(textToRead);
   
-  // 80 characters max to prevent slurring and avoid engine timeouts
-  ttsChunks = splitTextIntoChunks(preprocessed, 80);
+  // 120 characters max with natural boundary splitting
+  ttsChunks = splitTextIntoChunks(preprocessed, 120);
   currentChunkIndex = 0;
   isTtsPlaying = true;
 
@@ -159,8 +159,11 @@ function speakNextChunk() {
 
   if (!window.speechSynthesis) return;
 
-  // Cancel any previous utterance to reset engine and avoid the iOS freeze bug
-  window.speechSynthesis.cancel();
+  // ONLY cancel on the very first chunk to clear previous queues.
+  // Do not call cancel() between chunks, as it cuts off the final syllables on Windows/iOS!
+  if (currentChunkIndex === 0) {
+    window.speechSynthesis.cancel();
+  }
 
   const chunkText = ttsChunks[currentChunkIndex];
   ttsUtterance = new SpeechSynthesisUtterance(chunkText);
@@ -170,16 +173,16 @@ function speakNextChunk() {
     ttsUtterance.voice = thaiVoice;
   }
   
-  // Clear, slow reading speed for perfect word articulation
-  ttsUtterance.rate = 0.85;
+  // Comfortable slow-normal rate for elderly and natural pronunciation (0.78)
+  ttsUtterance.rate = 0.78;
   ttsUtterance.pitch = 1.0;
 
   ttsUtterance.onend = () => {
     currentChunkIndex++;
-    // Small delay between segments for natural breathing pause
+    // Small delay between segments for natural breathing pause (400ms)
     setTimeout(() => {
       speakNextChunk();
-    }, 300);
+    }, 400);
   };
 
   ttsUtterance.onerror = (e) => {
@@ -188,7 +191,7 @@ function speakNextChunk() {
     currentChunkIndex++;
     setTimeout(() => {
       speakNextChunk();
-    }, 300);
+    }, 400);
   };
 
   // Play the utterance

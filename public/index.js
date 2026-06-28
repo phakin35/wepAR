@@ -213,30 +213,63 @@ const btnTts = document.getElementById('btn-tts');
 // 1. Fetch and Render Artifacts
 // ----------------------------------------------------
 async function fetchArtifacts() {
+  let artifactsLoaded = false;
+  
+  // Try 1: API endpoint (for Node.js backends)
   try {
-    const res = await fetch('/api/artifacts');
-    if (!res.ok) throw new Error(`API returned ${res.status}`);
-    allArtifacts = await res.json();
-  } catch (err) {
-    console.warn("API /api/artifacts failed, falling back to assets/artifacts.json", err);
-    try {
-      const res = await fetch('assets/artifacts.json');
-      if (!res.ok) throw new Error(`Static JSON returned ${res.status}`);
+    const res = await fetch('/api/artifacts', { timeout: 3000 });
+    if (res.ok) {
       allArtifacts = await res.json();
-    } catch (fallbackErr) {
-      console.error("Error fetching artifacts database", fallbackErr);
-      if (archiveGrid) {
-        archiveGrid.innerHTML = `
-          <div style="grid-column: 1/-1; text-align: center; color: #D94625; padding: 2rem;">
-            <h3><i data-lucide="alert-triangle" class="icon-inline"></i> ไม่สามารถโหลดข้อมูลวัตถุโบราณได้</h3>
-            <p>ตรวจสอบไฟล์ assets/artifacts.json หรือการตั้งค่าโฮสต์ของคุณ</p>
-          </div>
-        `;
-        if (window.lucide) lucide.createIcons();
+      console.log(`✓ Loaded ${allArtifacts.length} artifacts from API`);
+      artifactsLoaded = true;
+    }
+  } catch (err) {
+    console.log("API endpoint not available, trying static JSON...");
+  }
+  
+  // Try 2: Static JSON file (for static hosting like Netlify)
+  if (!artifactsLoaded) {
+    try {
+      const res = await fetch('./assets/artifacts.json');
+      if (res.ok) {
+        allArtifacts = await res.json();
+        console.log(`✓ Loaded ${allArtifacts.length} artifacts from static JSON`);
+        artifactsLoaded = true;
       }
-      return;
+    } catch (err) {
+      console.log("Relative path failed, trying absolute path...");
     }
   }
+  
+  // Try 3: Absolute path (for static hosting)
+  if (!artifactsLoaded) {
+    try {
+      const res = await fetch('/assets/artifacts.json');
+      if (res.ok) {
+        allArtifacts = await res.json();
+        console.log(`✓ Loaded ${allArtifacts.length} artifacts from /assets/artifacts.json`);
+        artifactsLoaded = true;
+      }
+    } catch (err) {
+      console.error("Could not load artifacts from any source:", err);
+    }
+  }
+  
+  // If all methods failed, show error
+  if (!artifactsLoaded) {
+    console.error("Failed to load artifacts database");
+    if (archiveGrid) {
+      archiveGrid.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; color: #D94625; padding: 2rem;">
+          <h3><i data-lucide="alert-triangle" class="icon-inline"></i> ไม่สามารถโหลดข้อมูลวัตถุโบราณได้</h3>
+          <p>ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต และลองรีเฟรชหน้านี้อีกครั้ง</p>
+        </div>
+      `;
+      if (window.lucide) lucide.createIcons();
+    }
+    return;
+  }
+  
   renderGrid();
   renderFeaturedGallery();
 }      if (window.lucide) lucide.createIcons();

@@ -2,16 +2,19 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const artifacts = require('./data/artifacts');
+const { mapArtifactsForRuntime } = require('./data/cdn');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const useCdn = process.env.USE_CDN === '1';
+const runtimeArtifacts = mapArtifactsForRuntime(artifacts, useCdn);
 
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // JSON API
 app.get('/api/artifacts', (req, res) => {
-  res.json(artifacts);
+  res.json(runtimeArtifacts);
 });
 
 // HTML entry point redirect
@@ -26,4 +29,4 @@ if (require.main === module) {
 }
 
 module.exports = app;
-module.exports.artifacts = artifacts;
+module.exports.artifacts = runtimeArtifacts;
